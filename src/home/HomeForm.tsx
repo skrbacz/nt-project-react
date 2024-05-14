@@ -35,8 +35,7 @@ export default function HomeForm() {
   };
 
   const handleLogout = () => {
-    // Perform logout actions, such as clearing user session
-    // Then redirect to the login page
+    //TODO: logging out code
     navigate('/login');
   };
 
