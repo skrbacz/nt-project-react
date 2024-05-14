@@ -1,0 +1,19 @@
+.button-container button {
+  background: none; /* Remove background */
+  border: none; /* Remove border */
+  color: rgb(255, 111, 0); /* Default enabled text color */
+  padding: 10px 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.button-container button:disabled {
+  color: grey; /* Disabled text color */
+  cursor: not-allowed;
+}
+
+.my-loans-text {
+  text-align: left;
+  color: black;
+  font-weight: bold;
+}
