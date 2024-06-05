@@ -1,5 +1,5 @@
 import './HomeForm.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
@@ -19,15 +19,42 @@ import Button from '@mui/material/Button';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import SentimentSatisfiedAltOutlinedIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 
-
-import BookGrid from '../book-grid/BookGrid';
-import MeForm from '../me-form/MeForm';
+import MeForm from '../me/me-form/MeForm';
+import { useApi } from '../api/ApiProvider';
+import BookGrid from '../book/book-grid/BookGrid';
+import RegisterUserForm from '../admin/RegisterUserForm';
 const drawerWidth = 280;
 
+interface MeProps {
+  userId: number;
+  name: string;
+  lastName: string;
+  email: string;
+  userRole: string;
+}
+
 export default function HomeForm() {
+  const apiClient = useApi();
+  
   const [selectedPage, setSelectedPage] = useState('Home');
   const navigate = useNavigate();
+
+  const [user, setUser]= useState<MeProps | null>(null);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      const meData = await apiClient.getMe();
+      console.log(meData.data);
+      setUser(meData.data);
+    };
+    fetchBooks();
+  }, [apiClient]);
+
+  if(!user){
+    return <div>Loading...</div>
+  }
 
   const handlePageChange = (page: string) => {
     console.log('Changing page to:', page);
@@ -35,7 +62,8 @@ export default function HomeForm() {
   };
 
   const handleLogout = () => {
-    //TODO: logging out code
+    // Perform logout actions, such as clearing user session
+    // Then redirect to the login page
     navigate('/login');
   };
 
@@ -53,7 +81,7 @@ export default function HomeForm() {
           <Typography variant="h6" noWrap component="div">
             ChillReads Chamber
           </Typography>
-          <Button color="inherit" onClick={handleLogout} sx={{ color: 'red'}}>
+          <Button color="inherit" onClick={handleLogout} sx={{ color: 'red' }}>
             <LogoutIcon />
           </Button>
         </Toolbar>
@@ -71,32 +99,90 @@ export default function HomeForm() {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {['Home', 'Me'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                  selected={selectedPage === text}
-                  onClick={() => handlePageChange(text)}
-                >
-                  <ListItemIcon>
-                    {index % 2 === 0 ? (
-                      <HomeOutlinedIcon />
-                    ) : (
-                      <SentimentSatisfiedAltOutlinedIcon />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+          {['Home', 'Me'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton
+                selected={selectedPage === text}
+                onClick={() => handlePageChange(text)}
+              >
+                <ListItemIcon>
+                  {index === 0 ? (
+                    <HomeOutlinedIcon />
+                  ) : (
+                    <SentimentSatisfiedAltOutlinedIcon />
+                  )}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+          {user.userRole === 'ROLE_ADMIN' && (
+            <ListItem disablePadding>
+              <ListItemButton
+                selected={selectedPage === 'Add user'}
+                onClick={() => handlePageChange('Add user')}
+              >
+                <ListItemIcon>
+                  <AssignmentIndOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Add user" />
+              </ListItemButton>
+            </ListItem>
+          )}
           <Divider />
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        {selectedPage === 'Home' && <BookGrid />}{' '}
-        {selectedPage === 'Me' && <MeForm />}{' '}
+        {user.userRole === 'ROLE_ADMIN' && (
+          <>
+            {selectedPage === 'Home' && (
+              <>
+                <ListItemIcon>
+                  <HomeOutlinedIcon />
+                </ListItemIcon>
+                <BookGrid />
+              </>
+            )}
+            {selectedPage === 'Me' && (
+              <>
+                <ListItemIcon>
+                  <SentimentSatisfiedAltOutlinedIcon />
+                </ListItemIcon>
+                <MeForm />
+              </>
+            )}
+            {selectedPage === 'Add user' && (
+              <>
+                <ListItemIcon>
+                  <AssignmentIndOutlinedIcon />
+                </ListItemIcon>
+                <RegisterUserForm/>
+              
+              </>
+            )}
+          </>
+        )}
+        {user.userRole === 'ROLE_READER' && (
+          <>
+            {selectedPage === 'Home' && (
+              <>
+                <ListItemIcon>
+                  <HomeOutlinedIcon />
+                </ListItemIcon>
+                <BookGrid />
+              </>
+            )}
+            {selectedPage === 'Me' && (
+              <>
+                <ListItemIcon>
+                  <SentimentSatisfiedAltOutlinedIcon />
+                </ListItemIcon>
+                <MeForm />
+              </>
+            )}
+          </>
+        )}
       </Box>{' '}
     </Box>
   );

@@ -1,24 +1,25 @@
 import React from 'react';
 import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import './Book.css'; // Make sure this is your custom CSS file
+import BookDetails, {BookDetailsProps} from './book-details/BookDetails';
 
-interface BookProps {
-  id: number;
-  title: string;
-  author: string;
-  yearPublished: number;
-  photo: string;
-  avaliableCopies: number;
+export interface BookProps {
+  bookId: number,
+  title: string,
+  author: string,
+  yearPublished: number,
+  bookDetails: BookDetailsProps,
+  available: boolean
 }
 
-export default function Book({ id, title, author, yearPublished, photo, avaliableCopies }: BookProps) {
+export default function Book({ bookId, title, author, yearPublished, available, bookDetails }: BookProps) {
   return (
     <Card className="book">
       <CardMedia
         component="img"
         height="200"
         width="150"
-        image={photo}
+        image={bookDetails.coverImageUrl}
         alt={'Cover of the book titled ${title}'}
         className="book-image"
       />
@@ -26,6 +27,9 @@ export default function Book({ id, title, author, yearPublished, photo, avaliabl
         <Typography className="book-title">{title}</Typography>
         <Typography className="book-details-text">
           by {author}, {yearPublished}
+        </Typography>
+        <Typography className="book-avaliable">
+          is avaliable: {available ? 'Yes' : 'No'}
         </Typography>
       </CardContent>
     </Card>
