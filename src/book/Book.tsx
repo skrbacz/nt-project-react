@@ -23,13 +23,10 @@ export default function Book({ bookId, title, author, yearPublished, available, 
         alt={'Cover of the book titled ${title}'}
         className="book-image"
       />
-      <CardContent className="book-details">
-        <Typography className="book-title">{title}</Typography>
-        <Typography className="book-details-text">
+      <CardContent className="book-info">
+      <Typography className=".book-title">{title}</Typography>
+        <Typography className=".book-info-author-year">
           by {author}, {yearPublished}
-        </Typography>
-        <Typography className="book-avaliable">
-          is avaliable: {available ? 'Yes' : 'No'}
         </Typography>
       </CardContent>
     </Card>

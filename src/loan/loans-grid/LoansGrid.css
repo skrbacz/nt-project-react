@@ -1,14 +1,14 @@
 .button-container button {
-  background: none; /* Remove background */
-  border: none; /* Remove border */
-  color: rgb(255, 111, 0); /* Default enabled text color */
+  background: none;
+  border: none;
+  color: rgb(255, 111, 0); 
   padding: 10px 10px;
   cursor: pointer;
   font-size: 16px;
 }
 
 .button-container button:disabled {
-  color: grey; /* Disabled text color */
+  color: grey; 
   cursor: not-allowed;
 }
 

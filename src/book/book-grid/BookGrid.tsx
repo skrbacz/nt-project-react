@@ -6,7 +6,7 @@ import Book, { BookProps } from '../Book';
 import { useApi } from '../../api/ApiProvider';
 import BookDetailsModal from '../popup/BookPopUp';
 
-interface BookGridProps {
+export interface BookGridProps {
   books: BookProps[];
   currentPage: number;
   totalItems: number;

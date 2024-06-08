@@ -9,6 +9,7 @@ interface MeProps {
   name: string;
   lastName: string;
   email: string;
+  username: string;
   userRole: string;
 }
 
@@ -36,11 +37,11 @@ export default function MeForm() {
           name={user.name}
           lastName={user.lastName}
           email={user.email}
+          username={user.username}
           userRole={user.userRole}
         />
       </div>
       <div className="loans-grid">
-        console.log('userId:', user.userId);
         <LoansGrid userId={user.userId} />
       </div>
     </div>

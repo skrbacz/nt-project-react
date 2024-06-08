@@ -7,7 +7,6 @@ import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -20,28 +19,26 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import SentimentSatisfiedAltOutlinedIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 
 import MeForm from '../me/me-form/MeForm';
 import { useApi } from '../api/ApiProvider';
 import BookGrid from '../book/book-grid/BookGrid';
 import RegisterUserForm from '../admin/RegisterUserForm';
+import ManageBooksForm from '../admin/manage-books/ManageBooksForm';
+import { MeProps } from '../me/Me';
+import RegisterForm from '../admin/RegisterForm';
+
 const drawerWidth = 280;
 
-interface MeProps {
-  userId: number;
-  name: string;
-  lastName: string;
-  email: string;
-  userRole: string;
-}
 
 export default function HomeForm() {
   const apiClient = useApi();
-  
+
   const [selectedPage, setSelectedPage] = useState('Home');
   const navigate = useNavigate();
 
-  const [user, setUser]= useState<MeProps | null>(null);
+  const [user, setUser] = useState<MeProps | null>(null);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -52,8 +49,8 @@ export default function HomeForm() {
     fetchBooks();
   }, [apiClient]);
 
-  if(!user){
-    return <div>Loading...</div>
+  if (!user) {
+    return <div>Loading...</div>;
   }
 
   const handlePageChange = (page: string) => {
@@ -62,8 +59,6 @@ export default function HomeForm() {
   };
 
   const handleLogout = () => {
-    // Perform logout actions, such as clearing user session
-    // Then redirect to the login page
     navigate('/login');
   };
 
@@ -129,6 +124,19 @@ export default function HomeForm() {
               </ListItemButton>
             </ListItem>
           )}
+          {user.userRole === 'ROLE_ADMIN' && (
+            <ListItem disablePadding>
+              <ListItemButton
+                selected={selectedPage === 'Manage Books'}
+                onClick={() => handlePageChange('Manage Books')}
+              >
+                <ListItemIcon>
+                  <AutoStoriesOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Manage Books" />
+              </ListItemButton>
+            </ListItem>
+          )}
           <Divider />
         </Box>
       </Drawer>
@@ -157,8 +165,15 @@ export default function HomeForm() {
                 <ListItemIcon>
                   <AssignmentIndOutlinedIcon />
                 </ListItemIcon>
-                <RegisterUserForm/>
-              
+                <RegisterForm />
+              </>
+            )}
+            {selectedPage === 'Manage Books' && (
+              <>
+                <ListItemIcon>
+                  <AutoStoriesOutlinedIcon />
+                </ListItemIcon>
+                <ManageBooksForm />
               </>
             )}
           </>

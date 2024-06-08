@@ -1,18 +1,26 @@
-import React from 'react'; // Use React instead of react
+import React from 'react';
 import './Me.css';
-import Loan, { LoanProps } from '../loan/Loan';
 
-interface MeProps {
+export interface MeProps {
   userId: number;
   name: string;
   lastName: string;
   email: string;
+  username: string;
   userRole: string;
 }
 
-export default function Me({ userId, name, lastName, email, userRole }: MeProps) {
+export default function Me({
+  userId,
+  name,
+  lastName,
+  email,
+  username,
+  userRole
+}: MeProps) {
   return (
     <div>
+      <h2>Username: {username}</h2>
       <h2>Name: {name}</h2>
       <h2>Last Name: {lastName}</h2>
       <h2>Email: {email}</h2>

@@ -11,19 +11,19 @@
   object-fit: cover;
 }
 
-.book-details {
+.book-info {
   flex: 1;
   padding: 9px;
   overflow: hidden;
 }
 
 .book-title {
-  font-size: 13px;
+  font-size: 1px;
   font-weight: bold;
   color: #333;
 }
 
-.book-details-text {
+.book-info-author-year {
   font-size: 10px;
   color: #666;
 }
