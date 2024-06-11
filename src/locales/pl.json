@@ -106,5 +106,6 @@
   "delSuccLoan": "Pomyślnie usunięto wypożyczenie o id: ",
   "delErrorLoan": "Bład usuwania wypożyczenia: ",
   "loanList": "Lista wypożyczeń",
-  "returnDate": "Data zwrotu"
+  "returnDate": "Data zwrotu",
+  "loginMessage": "Musisz sie zalogować żeby móc wejść na tą strone :)"
 }
