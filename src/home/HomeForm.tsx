@@ -68,7 +68,7 @@ export default function HomeForm() {
 
   if (!user) {
     navigate('/login')
-    return <div>{t('loading')}</div>;
+    return <div>{t('loginMessage')}</div>;
   }
 
   const handlePageChange = (page: string) => {
