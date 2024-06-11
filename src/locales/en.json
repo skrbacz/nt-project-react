@@ -106,5 +106,6 @@
   "delSuccLoan": "Successfully deleted loan with ID: ",
   "delErrorLoan": "Error deleting loan: ",
   "loanList": "Loan List",
-  "returnDate": "Return Date"
+  "returnDate": "Return Date",
+  "loginMessage": "You must be logged in to access this page :)"
 }
