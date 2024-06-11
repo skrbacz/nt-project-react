@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import './BookDetails.css';
 export interface BookDetailsProps {
   coverImageUrl: string;
@@ -10,11 +11,13 @@ export default function BookDetails({
   genre,
   summary,
 }: BookDetailsProps) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <img src={coverImageUrl} alt="Book cover" />
-      <p>Genre: {genre}</p>
-      <p>Summary: {summary}</p>
+      <p>{t('genre')}: {genre}</p>
+      <p>{t('summary')}: {summary}</p>
     </div>
   );
 }

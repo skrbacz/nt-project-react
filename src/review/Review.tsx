@@ -1,5 +1,6 @@
 import React from 'react';
 import { Rating, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface ReviewProps {
   userId: number;
@@ -10,10 +11,12 @@ interface ReviewProps {
 }
 
 export default function Review({ userId, bookId, rating, comment, reviewDate }: ReviewProps) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <Rating name="read-only" value={rating} readOnly />
-      <Typography>Comment: {comment}</Typography>
+      <Typography>{t('comment')}: {comment}</Typography>
     </div>
   );
 }

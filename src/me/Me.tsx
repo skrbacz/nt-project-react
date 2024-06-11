@@ -1,5 +1,6 @@
 import React from 'react';
 import './Me.css';
+import { useTranslation } from 'react-i18next';
 
 export interface MeProps {
   userId: number;
@@ -18,12 +19,13 @@ export default function Me({
   username,
   userRole
 }: MeProps) {
+  const { t } = useTranslation();
   return (
     <div>
-      <h2>Username: {username}</h2>
-      <h2>Name: {name}</h2>
-      <h2>Last Name: {lastName}</h2>
-      <h2>Email: {email}</h2>
+      <h2>{t('username')}: {username}</h2>
+      <h2>{t('name')}: {name}</h2>
+      <h2>{t('lastName')}: {lastName}</h2>
+      <h2>{t('email')}: {email}</h2>
     </div>
   );
 }

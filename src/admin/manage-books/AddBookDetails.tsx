@@ -1,47 +1,72 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { TextField, Button, Typography, Box, Container, Alert, ThemeProvider, createTheme } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Alert,
+  ThemeProvider,
+  createTheme,
+  MenuItem,
+  SelectChangeEvent,
+} from '@mui/material';
 import { useApi } from '../../api/ApiProvider';
+import { BookProps } from '../../book/Book';
+import { useTranslation } from 'react-i18next';
 
-interface AddBookDetailsFormValues {
+export interface AddBookDetailsValues {
   coverImageURL: string;
   genre: string;
   summary: string;
+  selectedBookId: number;
 }
 
-const initialValues: AddBookDetailsFormValues = {
+const initialValues: AddBookDetailsValues = {
   coverImageURL: '',
   genre: '',
   summary: '',
+  selectedBookId: 0,
 };
 
-interface AddBookForm{
-  books: []
+interface AddBookDetailsProps {
+  books: BookProps[];
+  onPatchBookDetails: () => void;
 }
 
-const validationSchema = Yup.object({
-  coverImageURL: Yup.string().required('Cover Image URL is required'),
-  genre: Yup.string().required('Genre is required'),
-  summary: Yup.string().required('Summary is required'),
-});
 
-const AddBookForm: React.FC = ({books}) => {
+const AddBookDetails: React.FC<AddBookDetailsProps> = ({
+  books,
+  onPatchBookDetails,
+}) => {
+
+  const {t} = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const clientApi = useApi();
 
-  const handleSubmit = async (values: AddBookDetailsFormValues) => {
+  const handleSubmit = async (
+    values: AddBookDetailsValues,
+    { resetForm }: { resetForm: () => void },
+  ) => {
     try {
-      // Adjust the API call according to your actual implementation
-      const response = await clientApi.patchBookDetials(values.coverImageURL, values.genre, values.summary);
+      console.log(values.selectedBookId);
+      const response = await clientApi.patchBookDetials(
+        values.selectedBookId,
+        values.genre,
+        values.summary,
+        values.coverImageURL,
+      );
       if (response.success) {
-        alert('Book added successfully!');
+        alert(t('bookDetailsAddedSuccessfully'));
         setError(null);
+        resetForm(); 
+        onPatchBookDetails();
       } else {
-        setError('Failed to add book.');
+        alert(t('addBookDetailsFail'));
       }
     } catch (error) {
-      setError('Unexpected error occurred.');
+      alert(t('unexpectedError') + error);
     }
   };
 
@@ -51,70 +76,137 @@ const AddBookForm: React.FC = ({books}) => {
         main: 'rgb(255, 111, 0)',
       },
     },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            color: '#fff',
+          },
+        },
+      },
+    },
   });
+
+  const filteredBooks = books.filter(
+    (book) =>
+      !book.bookDetails.coverImageUrl &&
+      !book.bookDetails.genre &&
+      !book.bookDetails.summary,
+  );
+  console.log(filteredBooks);
 
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="sm">
         <Typography variant="h4" component="h1" gutterBottom>
-          Add Book Details
+          {t('addBookDetails')}
         </Typography>
         {error && <Alert severity="error">{error}</Alert>}
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validationSchema={Yup.object({
+            coverImageURL: Yup.string().required(t('coverImgReq')),
+            genre: Yup.string().required(t('genreReq')),
+            summary: Yup.string().required(t('summaryReq')),
+            selectedBookId: Yup.number().required(t('selectBookReq')),
+          })}
           onSubmit={handleSubmit}
         >
-          {({ isValid, handleChange, values, touched, errors }) => (
+          {(
+            { isValid, setFieldValue, values, touched, errors, resetForm }, // Provide resetForm function
+          ) => (
             <Form>
-              <Box mb={2}>
-                <Field
-                  name="coverImageURL"
-                  as={TextField}
-                  label="Cover Image URL"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleChange}
-                  value={values.coverImageURL}
-                  helperText={touched.coverImageURL && errors.coverImageURL ? errors.coverImageURL : ''}
-                  error={Boolean(touched.coverImageURL && errors.coverImageURL)}
-                />
-              </Box>
-              <Box mb={2}>
-                <Field
-                  name="genre"
-                  as={TextField}
-                  label="Genre"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleChange}
-                  value={values.genre}
-                  helperText={touched.genre && errors.genre ? errors.genre : ''}
-                  error={Boolean(touched.genre && errors.genre)}
-                />
-              </Box>
-              <Box mb={2}>
-                <Field
-                  name="summary"
-                  as={TextField}
-                  label="Summary"
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                  rows={4}
-                  onChange={handleChange}
-                  value={values.summary}
-                  helperText={touched.summary && errors.summary ? errors.summary : ''}
-                  error={Boolean(touched.summary && errors.summary)}
-                />
-              </Box>
+              <Field
+                as={TextField}
+                select
+                name="selectedBookId"
+                label={t('selectBook')}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                onChange={(e: SelectChangeEvent<number>) =>
+                  setFieldValue('selectedBookId', e.target.value)
+                }
+                value={values.selectedBookId}
+                helperText={
+                  touched.selectedBookId && errors.selectedBookId
+                    ? errors.selectedBookId
+                    : ''
+                }
+                error={Boolean(touched.selectedBookId && errors.selectedBookId)}
+              >
+                {filteredBooks.length === 0 ? (
+                  <Typography variant="body2" color="textSecondary">
+                    {t('everyBookHasDetails')}
+                  </Typography>
+                ) : (
+                  filteredBooks.map((book) => (
+                    <MenuItem key={book.bookId} value={book.bookId}>
+                      {book.title} - {book.author}
+                    </MenuItem>
+                  ))
+                )}
+              </Field>
+              <Field
+                name="coverImageURL"
+                as={TextField}
+                margin="normal"
+                label={t('coverImageURL')}
+                variant="outlined"
+                fullWidth
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setFieldValue('coverImageURL', e.target.value)
+                }
+                value={values.coverImageURL}
+                helperText={
+                  touched.coverImageURL && errors.coverImageURL
+                    ? errors.coverImageURL
+                    : ''
+                }
+                error={Boolean(touched.coverImageURL && errors.coverImageURL)}
+              />
+
+              <Field
+                name="genre"
+                as={TextField}
+                label={t('genre')}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setFieldValue('genre', e.target.value)
+                }
+                value={values.genre}
+                helperText={touched.genre && errors.genre ? errors.genre : ''}
+                error={Boolean(touched.genre && errors.genre)}
+              />
+
+              <Field
+                name="summary"
+                as={TextField}
+                label={t('summary')}
+                variant="outlined"
+                fullWidth
+                multiline
+                margin="normal"
+                rows={4}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setFieldValue('summary', e.target.value)
+                }
+                value={values.summary}
+                helperText={
+                  touched.summary && errors.summary ? errors.summary : ''
+                }
+                error={Boolean(touched.summary && errors.summary)}
+              />
+
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
                 disabled={!isValid}
               >
-                Add Book
+                {t('addBookDetails')}
               </Button>
             </Form>
           )}
@@ -124,4 +216,4 @@ const AddBookForm: React.FC = ({books}) => {
   );
 };
 
-export default AddBookForm;
+export default AddBookDetails;

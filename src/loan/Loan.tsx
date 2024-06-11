@@ -3,10 +3,13 @@ import './Loan.css';
 import { Button, Card, CardContent, Typography } from '@mui/material';
 import { BookProps } from '../book/Book';
 import { useApi } from '../api/ApiProvider';
+import { MeProps } from '../me/Me';
+import { useTranslation } from 'react-i18next';
 
 export interface LoanProps {
   loanId: number;
   book: BookProps;
+  user: MeProps;
   loanDate: string;
   dueDate: string;
   returnDate: string | null;
@@ -16,6 +19,7 @@ export interface LoanProps {
 export default function Loan({
   loanId,
   book,
+  user,
   loanDate,
   dueDate,
   returnDate,
@@ -23,11 +27,13 @@ export default function Loan({
 }: LoanProps) {
   const clientApi = useApi();
 
+  const {t}= useTranslation();
+
   const handleReturn = async () => {
     try {
       console.log(loanId);
       await clientApi.patchLoanReturnBook(loanId);
-      onReturn(); // Notify parent component
+      onReturn(); 
     } catch (error) {
       console.error('Error returning book:', error);
     }
@@ -36,16 +42,16 @@ export default function Loan({
   return (
     <Card className="loan">
       <CardContent className="loan-text">
-        <Typography>Loan id: {loanId}</Typography>
-        <Typography>Title: {book.title}</Typography>
-        <Typography>Author: {book.author}</Typography>
-        <Typography>Year of publication: {book.yearPublished}</Typography>
-        <Typography>Loan date: {loanDate}</Typography>
-        <Typography>Due date: {dueDate}</Typography>
+        <Typography>{t('loanId')}: {loanId}</Typography>
+        <Typography>{t('title')}: {book.title}</Typography>
+        <Typography>{t('author')}: {book.author}</Typography>
+        <Typography>{t('yearPublished')}: {book.yearPublished}</Typography>
+        <Typography>{t('loanDate')}: {loanDate}</Typography>
+        <Typography>{t('dueDate')}: {dueDate}</Typography>
         <div style={{ marginTop: '10px' }}>
           {returnDate ? (
             <Button variant="outlined" disabled>
-              Returned
+              {t('returned')}
             </Button>
           ) : (
             <Button
@@ -56,7 +62,7 @@ export default function Loan({
                 borderColor: 'rgb(255, 111, 0)',
               }}
             >
-              Return
+              {t('return')}
             </Button>
           )}
         </div>

@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Book, { BookProps } from '../Book';
 import { useApi } from '../../api/ApiProvider';
 import BookDetailsModal from '../popup/BookPopUp';
+import { useTranslation } from 'react-i18next';
 
 export interface BookGridProps {
   books: BookProps[];
@@ -17,25 +18,44 @@ export interface BookGridProps {
 export default function BookGrid() {
   const apiClient = useApi();
 
-  const [allBookData, setBooks] = useState<BookGridProps | null>(null);
   const [selectedBook, setSelectedBook] = useState<BookProps | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [books, setAllBooks] = useState<BookProps[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     const fetchBooks = async () => {
-      const booksData = await apiClient.getBooks();
-      console.log(booksData.data);
-      setBooks(booksData.data);
+      try {
+        let allBooksData: BookProps[] = [];
+        let currentPage = 0;
+        let hasMore = true;
+
+        while (hasMore) {
+          const booksData = await apiClient.getBooks(currentPage);
+          const books = booksData.data?.books || [];
+          allBooksData = allBooksData.concat(books);
+          hasMore = booksData.data?.hasMore || false;
+          currentPage++;
+        }
+
+        setAllBooks(allBooksData);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching books:', error);
+        setLoading(false);
+      }
     };
+
     fetchBooks();
   }, [apiClient]);
 
-  if (!allBookData) {
-    return <div>Loading...</div>;
-  }
+  const { t } = useTranslation();
 
-  const books = allBookData!.books;
-  console.log('books:', books);
+
+  if (loading) {
+    return <div>{t('loading')}</div>;
+  }
 
   const handleBookClick = (book: BookProps) => {
     setSelectedBook(book);
@@ -46,12 +66,10 @@ export default function BookGrid() {
     setIsModalOpen(false);
   };
 
-
-
   return (
     <div>
       <div className="list-of-books-text">
-        <Typography variant="h5">List of books</Typography>
+        <Typography variant="h5">{t('listOfBooks')}</Typography>
       </div>
       <Grid container spacing={2}>
         {books.map((book) => (
@@ -62,11 +80,14 @@ export default function BookGrid() {
             >
               <Book
                 bookId={book.bookId}
+                isbn={book.isbn}
                 title={book.title}
                 author={book.author}
+                publisher={book.publisher}
                 yearPublished={book.yearPublished}
                 bookDetails={book.bookDetails}
                 available={book.available}
+                availableBooks={book.availableBooks}
               />
             </div>
           </Grid>

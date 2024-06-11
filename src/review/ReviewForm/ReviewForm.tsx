@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Rating, Typography, Button, TextField } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useApi } from '../../api/ApiProvider';
+import { useTranslation } from 'react-i18next';
 
 interface ReviewFormProps {
   userId: number;
@@ -18,6 +19,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 }) => {
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState<string>('');
+
+  const { t } = useTranslation();
 
   const handleSubmit = async () => {
     if (rating !== null && comment.trim()) {
@@ -36,10 +39,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     },
   });
 
+
+
   return (
     <ThemeProvider theme={theme}>
       <div>
-        <Typography fontSize={16} marginBottom={-0.5}>Leave a Review</Typography>
+        <Typography fontSize={16} marginBottom={-0.5}>{t('leaveAReview')}</Typography>
         <Rating
           name="rating"
           value={rating}
@@ -48,7 +53,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           }}
         />
         <TextField
-          label="Short comment"
+          label={t('shortComment')}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           multiline
@@ -63,7 +68,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           onClick={handleSubmit}
           sx={{ backgroundColor: 'rgb(255, 111, 0)', color: '#fff' }}
         >
-          Submit
+          {t('submit')}
         </Button>
       </div>
     </ThemeProvider>

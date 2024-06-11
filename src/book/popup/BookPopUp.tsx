@@ -16,12 +16,17 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LoanProps } from '../../loan/Loan';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { MeProps } from '../../me/Me';
+import { useTranslation } from 'react-i18next';
+
+//TODO: you need to get all reviews from all pages showing here doesnt matter what kolejnosc xoxo
+//if available books ===0 button turned off "not avaliable"
 
 interface BookDetailsModalProps {
   open: boolean;
   onClose: () => void;
   book: {
     bookId: number;
+    isbn: string;
     title: string;
     author: string;
     yearPublished: number;
@@ -29,8 +34,6 @@ interface BookDetailsModalProps {
     available: boolean;
   };
 }
-
-
 
 interface Review {
   reviewId: number;
@@ -53,6 +56,8 @@ export default function BookDetailsModal({
   const [user, setUser] = useState<MeProps | null>(null);
   const [isDatePicked, setIsDatePicked] = useState(false);
   const [isBookLoanedByUser, setIsBookLoanedByUser] = useState(false);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -102,7 +107,7 @@ export default function BookDetailsModal({
   }, [open, apiClient, book]);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <div>{t('loading')}</div>;
   }
 
   const handleLoan = async () => {
@@ -191,7 +196,6 @@ export default function BookDetailsModal({
       console.error('Failed to delete review');
     }
   };
-  
 
   const theme = createTheme({
     palette: {
@@ -206,18 +210,19 @@ export default function BookDetailsModal({
       <Dialog open={open} onClose={onClose}>
         <DialogContent>
           <Typography variant="h5">{book.title}</Typography>
-          <Typography marginLeft={2}>Author: {book.author}</Typography>
+          <Typography marginLeft={2}>{t('author')}: {book.author}</Typography>
           <Typography marginLeft={2}>
-            Year of Publication: {book.yearPublished}
+            {t('yearPublished')}: {book.yearPublished}
+          </Typography>
+          <Typography marginLeft={2}>ISBN: {book.isbn}</Typography>
+          <Typography marginLeft={2}>
+            {t('genre')}: {book.bookDetails.genre}
           </Typography>
           <Typography marginLeft={2}>
-            Genre: {book.bookDetails.genre}
+            {t('summary')}: {book.bookDetails.summary}
           </Typography>
           <Typography marginLeft={2}>
-            Summary: {book.bookDetails.summary}
-          </Typography>
-          <Typography marginLeft={2}>
-            Available: {book.available ? 'Yes' : 'No'}
+            {t('available')}: {book.available ? t('availableYes') : t('availableNo') }
           </Typography>
           <div
             style={{
@@ -231,7 +236,7 @@ export default function BookDetailsModal({
               <DesktopDatePicker
                 value={dueDate}
                 onChange={(newValue) => handleDateChange(newValue)}
-                label="Select Due Date"
+                label={t('selectDueDate')}
               />
             </LocalizationProvider>
 
@@ -244,13 +249,17 @@ export default function BookDetailsModal({
                 width: '50%',
                 marginLeft: '10px',
               }}
-              disabled={!isDatePicked || isBookLoanedByUser}
+              disabled={!isDatePicked || isBookLoanedByUser || !book.available}
             >
-              {isBookLoanedByUser ? 'Loaned' : 'Loan'}
+              {isBookLoanedByUser
+                ? t('loaned')
+                : book.available
+                  ? t('loan')
+                  : t('notAvaliable')}
             </Button>
           </div>
           <Typography variant="h6" marginTop={2}>
-            Reviews
+            {t('reviews')}
           </Typography>
           <div
             style={{
@@ -261,14 +270,14 @@ export default function BookDetailsModal({
             }}
           >
             {reviews.length === 0 ? (
-              <Typography color="textSecondary">No reviews yet</Typography>
+              <Typography color="textSecondary">{t('noReviews')}</Typography>
             ) : (
               <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {reviews.map((review, index) => (
                   <div key={index}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <Typography marginTop={1} marginLeft={2}>
-                        {review.username} rated it:{' '}
+                        {review.username} {t('ratedIt')}:{' '}
                       </Typography>
                       <Rating value={review.rating} readOnly />{' '}
                       {user.username === review.username ? (
@@ -311,7 +320,7 @@ export default function BookDetailsModal({
               onSubmit={handleReviewSubmit}
               userId={user.userId}
               bookId={book.bookId}
-              apiClient={apiClient} // Pass apiClient to ReviewForm
+              apiClient={apiClient} 
             />
           </div>
         </DialogContent>

@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { LoginDto, LoginResponseDto } from './dto/login.dto';
 import { UserRole } from '../admin/UserRole';
+import { NavigateToLogin } from './NavigateToLogin';
 
 export type ClientResponse<T> = {
   success: boolean;
@@ -17,7 +18,23 @@ export class LibraryClient {
     this.client = axios.create({
       baseURL: 'http://localhost:8081/api',
     });
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.client.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+    }
+
+    this.client.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error: AxiosError) => {
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          NavigateToLogin();
+        }
+        return Promise.reject(error);
+      }
+    );
   }
+
 
   public async login(
     data: LoginDto,
@@ -28,8 +45,11 @@ export class LibraryClient {
         data,
       );
 
-      this.client.defaults.headers.common['Authorization'] =
-        'Bearer ' + response.data.token;
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem('token', token);
+        this.client.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+      }
 
       return {
         success: true,
@@ -45,6 +65,11 @@ export class LibraryClient {
         statusCode: axiosError.response?.status || 0,
       };
     }
+  }
+
+  public async logout() {
+    localStorage.removeItem('token');
+    delete this.client.defaults.headers.common['Authorization'];
   }
 
   public async postRegister(
@@ -75,10 +100,10 @@ export class LibraryClient {
     }
   }
 
-  public async getBooks() {
+  public async getBooks(page: number) {
     try {
       console.log(this.client.defaults.headers.common['Authorization']);
-      const response = await this.client.get('/books');
+      const response = await this.client.get(`/books?page=${page}`);
       return {
         success: true,
         data: response.data,
@@ -119,6 +144,44 @@ export class LibraryClient {
       const response = await this.client.get(
         `/loans?userId=${userId}&page=${page}`,
       );
+      return {
+        success: true,
+        data: response.data,
+        statusCode: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async getLoans(page: number) {
+    try {
+      const response = await this.client.get(`/loans?page=${page}`);
+      return {
+        success: true,
+        data: response.data,
+        statusCode: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async deleteLoan(loanId: number) {
+    try {
+      const response = await this.client.delete(`/loans/${loanId}`);
       return {
         success: true,
         data: response.data,
@@ -253,7 +316,7 @@ export class LibraryClient {
       };
     } catch (error) {
       const axiosError = error as AxiosError<Error>;
-  
+
       return {
         success: false,
         data: null,
@@ -261,14 +324,14 @@ export class LibraryClient {
       };
     }
   }
-  
+
   public async postBook(
     isbn: string,
     title: string,
     author: string,
     publisher: string,
     yearPublished: number,
-    availableCopies: number
+    availableCopies: number,
   ): Promise<ClientResponse<any>> {
     try {
       const response = await this.client.post(`/books`, {
@@ -277,7 +340,7 @@ export class LibraryClient {
         author,
         publisher,
         yearPublished,
-        availableCopies
+        availableCopies,
       });
       return {
         success: true,
@@ -295,17 +358,94 @@ export class LibraryClient {
   }
 
   public async patchBookDetials(
+    bookid: number,
     genre: string,
     summary: string,
     coverImageUrl: string,
-    
   ): Promise<ClientResponse<any>> {
     try {
-      const response = await this.client.patch(`/books/detials/{bookId}`, {
+      const response = await this.client.patch(`/books/details/${bookid}`, {
         genre,
         summary,
-        coverImageUrl
+        coverImageUrl,
       });
+      return {
+        success: true,
+        data: response.data,
+        statusCode: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+      return {
+        success: false,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async deleteBook(bookid: number): Promise<ClientResponse<any>> {
+    try {
+      const response = await this.client.delete(`/books/${bookid}`);
+      return {
+        success: true,
+        data: response.data,
+        statusCode: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+      return {
+        success: false,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async patchUser(userId: number, name: string, lastname: string) {
+    try {
+      const response = await this.client.patch(`/users/${userId}`, {
+        name,
+        lastname,
+      });
+      return {
+        success: true,
+        data: response.data,
+        statusCode: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async getUsers(currentPage: number) {
+    try {
+      const response = await this.client.get(`/users?page=${currentPage}`);
+      return {
+        success: true,
+        data: response.data,
+        statusCode: response.status,
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<Error>;
+
+      return {
+        success: false,
+        data: null,
+        statusCode: axiosError.response?.status || 0,
+      };
+    }
+  }
+
+  public async deleteUser(userId: number): Promise<ClientResponse<any>> {
+    try {
+      const response = await this.client.delete(`/users/${userId}`);
       return {
         success: true,
         data: response.data,

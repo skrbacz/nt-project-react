@@ -1,9 +1,75 @@
-.Login-form {
-  padding: 5rem;
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.login-page {
+  position: relative;
+  height: 100vh;
+  margin-left: 15%;
   display: flex;
-  margin-top: 10%;
+  justify-content: left;
+  align-items: center;
+  overflow: hidden;
+}
+
+.login-container {
+  position: relative;
+  width: 405px; /* Width of the bookmark shape */
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bookmark-shape {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(255, 186, 8);
+  clip-path: polygon(0 0, 0 , 70% 100%, 50% 70%, 0 70%);
+  z-index: -1;
+}
+
+.bookmark-shape::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 90%;
+  width: 100%;
+  height: 15%;
+  background-color: #ffffff;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.login-form {
+  padding: 2rem;
+  width: 100%;
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2rem;
   align-items: center;
+  gap: 1rem;
+  z-index: 1;
+}
+
+
+.svg-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 25%;
+  width: 200px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg-image {
+  width: 250%;
+  height: auto;
 }
