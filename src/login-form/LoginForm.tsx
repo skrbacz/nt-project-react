@@ -31,11 +31,10 @@ function LoginForm() {
   const validationSchema = useMemo(
     () =>
       yup.object().shape({
-        username: yup.string().required('Required'),
+        username: yup.string().required(t('usernameReqLog')),
         password: yup
           .string()
-          .required('Required')
-          .min(5, 'Password too short'),
+          .required(t('passwordReqLog')),
       }),
     [],
   );

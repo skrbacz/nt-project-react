@@ -107,5 +107,8 @@
   "delErrorLoan": "Bład usuwania wypożyczenia: ",
   "loanList": "Lista wypożyczeń",
   "returnDate": "Data zwrotu",
-  "loginMessage": "Musisz sie zalogować żeby móc wejść na tą strone :)"
+  "loginMessage": "Musisz sie zalogować żeby móc wejść na tą strone :)",
+  "usernameReqLog": "Nazwa użytkownika jest wymagana",
+  "passwordReqLog": "Hasło jest wymagane",
+  "passwordTooShort": "Hasło musi mieć conajmniej 8 znaków"
 }

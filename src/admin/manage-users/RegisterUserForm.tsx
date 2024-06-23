@@ -83,7 +83,7 @@ const RegisterUserForm: React.FC<RegisterUserFormProps> = ({onRegisterUser}) => 
           }}
           validationSchema={Yup.object().shape({
             username: Yup.string().required(t('usernameReq')),
-            password: Yup.string().required(t('passwordReq')),
+            password: Yup.string().required(t('passwordReq')).min(5, t('passwordTooShort')),
             role: Yup.string().required(t('roleReq')),
             email: Yup.string()
               .email(t('emailInvalid'))

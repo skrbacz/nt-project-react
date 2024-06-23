@@ -107,5 +107,8 @@
   "delErrorLoan": "Error deleting loan: ",
   "loanList": "Loan List",
   "returnDate": "Return Date",
-  "loginMessage": "You must be logged in to access this page :)"
+  "loginMessage": "You must be logged in to access this page :)",
+  "usernameReqLog": "Username is required",
+  "passwordReqLog": "Password is required",
+  "passwordTooShort": "Password has to be at least 8 characters long!"
 }

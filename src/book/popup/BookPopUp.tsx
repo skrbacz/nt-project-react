@@ -236,6 +236,7 @@ export default function BookDetailsModal({
               <DesktopDatePicker
                 value={dueDate}
                 onChange={(newValue) => handleDateChange(newValue)}
+                minDate={dayjs()}
                 label={t('selectDueDate')}
               />
             </LocalizationProvider>

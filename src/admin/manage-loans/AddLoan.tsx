@@ -139,7 +139,6 @@ const AddLoan: React.FC<AddLoanProps> = ({ onAddLoan }) => {
   };
 
   if (loading) {
-    navigate('/login');
     return <CircularProgress />;
   }
 

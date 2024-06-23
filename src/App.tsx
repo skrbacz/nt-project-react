@@ -18,7 +18,6 @@ function App() {
   return (
     <BrowserRouter>
       <I18nextProvider i18n={i18n}>
-        <NavigateProvider>
           <ApiProvider>
             <div className="App">
               <Routes>
@@ -28,7 +27,6 @@ function App() {
               </Routes>
             </div>
           </ApiProvider>
-        </NavigateProvider>
       </I18nextProvider>
     </BrowserRouter>
   );
